@@ -1,8 +1,8 @@
 package com.app.ecom.controller;
 
+import com.app.ecom.dto.UserRequest;
 import com.app.ecom.dto.UserResponse;
 import com.app.ecom.service.UserService;
-import com.app.ecom.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,20 +23,20 @@ public class UserController {
     }
 
     @GetMapping("/api/users/{id}")
-    public User getUserById(@PathVariable int id){
+    public UserResponse getUserById(@PathVariable int id){
          return service.getUserById(id);
 
     }
 
     @PostMapping("/api/users")
-    public String createUser(@RequestBody User user){
-       service.createUser(user);
+    public String createUser(@RequestBody UserRequest userRequest){
+       service.createUser(userRequest);
        return "User added successfully ";
     }
 
     @PutMapping("/api/users/{id}")
-    public String updateUser(@RequestBody User user,@PathVariable int id){
-       service.updateUser(id,user);
+    public String updateUser(@RequestBody UserRequest userRequest,@PathVariable int id){
+       service.updateUser(id,userRequest);
        return "User Updated successfully ";
     }
 

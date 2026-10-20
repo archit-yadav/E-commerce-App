@@ -1,6 +1,7 @@
 package com.app.ecom.service;
 
 import com.app.ecom.dto.AddressDTO;
+import com.app.ecom.dto.UserRequest;
 import com.app.ecom.dto.UserResponse;
 import com.app.ecom.model.Address;
 import com.app.ecom.model.User;
@@ -25,19 +26,22 @@ public class UserService {
                   .collect(Collectors.toList());
      }
 
-    public void createUser( User user){
+    public void createUser( UserRequest userRequest){
 //        user.setId(nextId++);
 //        userList.add(user);
+
+        User user = new User();
+        updateUserFromRequest(user,userRequest);
+
           userRepository.save(user);
     }
 
-
-    public User getUserById(int id) {
+    public UserResponse getUserById(int id) {
 
 //        return userList.stream().filter(user -> user.getId().equals((long)id)).findFirst().
 //                orElseGet(User::new);
 
-        return userRepository.findById(Long.valueOf(id)).orElse(null);
+        return userRepository.findById(Long.valueOf(id)).map(this::mapToResponse).orElse(null);
 
 
 //        for (User user: userList){
@@ -48,7 +52,7 @@ public class UserService {
 
     }
 
-    public void updateUser(int id, User updatedUser) {
+    public void updateUser(int id, UserRequest updatedUserRequest) {
 //        userList.stream().filter(n -> n.getId().equals((long)id)).findFirst().
 //                ifPresent(n -> {
 //                    int i = userList.indexOf(n);
@@ -61,8 +65,8 @@ public class UserService {
 
          userRepository.findById((long) id).map(
                  n -> {
-                     n.setFirstName(updatedUser.getFirstName());
-                     n.setLastName(updatedUser.getLastName());
+
+                     updateUserFromRequest(n,updatedUserRequest);
                      userRepository.save(n);
                      return null;
                  });
@@ -74,6 +78,28 @@ public class UserService {
         userRepository.deleteById((long) id);
 
     }
+
+
+
+
+
+    private void updateUserFromRequest(User user, UserRequest userRequest) {
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
+        user.setEmail(userRequest.getEmail());
+        user.setPhone(userRequest.getPhone());
+
+        if(userRequest.getAddress()!=null){
+            Address address = new Address();
+            address.setCity(userRequest.getAddress().getCity());
+            address.setZipcode(userRequest.getAddress().getZipCode());
+            address.setCountry(userRequest.getAddress().getCountry());
+            address.setStreet(userRequest.getAddress().getStreet());
+            address.setState(userRequest.getAddress().getState());
+            user.setAddress(address);
+        }
+    }
+
 
     private UserResponse mapToResponse(User user){
 
@@ -92,7 +118,7 @@ public class UserService {
             addressDTO.setCity(user.getAddress().getCity());
             addressDTO.setState(user.getAddress().getState());
             addressDTO.setCountry(user.getAddress().getCountry());
-            addressDTO.setZipcode(user.getAddress().getZipcode());
+            addressDTO.setZipCode(user.getAddress().getZipcode());
             response.setAddress(addressDTO);
         }
 
