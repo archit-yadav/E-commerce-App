@@ -6,6 +6,8 @@ import com.app.ecom.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor //constuctor will be generated of final fields only
 @RequestMapping("/api/products")
@@ -18,8 +20,24 @@ public class ProductController {
         return productService.createProduct(productRequest);
     }
 
+    @GetMapping
+    public List<ProductResponse> getAllProducts(){
+        return productService.getAllProducts();
+    }
+
     @PutMapping("/{id}")
     public ProductResponse updateProduct(@PathVariable Long id, @RequestBody ProductRequest productRequest){
         return productService.updateProduct(id,productRequest);
     }
+
+    @DeleteMapping("/{id}")
+    public ProductResponse deleteProduct(@PathVariable Long id){
+        return productService.deleteProduct(id);
+    }
+
+    @GetMapping("/search")
+    public List<ProductResponse> searchProducts(@RequestParam String keyword){
+        return productService.searchProducts(keyword);
+    }
+
 }
